@@ -1,0 +1,22 @@
+{
+  "name": "mcarz-back-utils",
+  "version": "1.0.0",
+  "description": "Module Back-end End with common Util to Node projects",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "nodemailer": "5.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/marlonrcardoso/mcarz-back-utils.git"
+  },
+  "keywords": [
+    "mine-backend-utils"
+  ],
+  "author": "marlonrcardoso",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/marlonrcardoso/mcarz-back-utils#readme"
+}
