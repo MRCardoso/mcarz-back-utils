@@ -11,12 +11,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org/mrcmasters/mcarz-back-utils.git"
+    "url": "git+ssh://git@bitbucket.org/mcarznpmx/mcarz-back-utils.git"
   },
   "keywords": [
     "mine-backend-utils"
   ],
   "author": "marlonrcardoso",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/mrcmasters/mcarz-back-utils#readme"
+  "homepage": "https://bitbucket.org/mcarznpmx/mcarz-back-utils#readme"
 }
