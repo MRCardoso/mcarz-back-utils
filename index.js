@@ -1,5 +1,6 @@
 const Error = require('./lib/handlers/Error')
 const Mail = require('./lib/handlers/Mail')
+const Services = require('./lib/handlers/Services')
 
 const Modelus = require('./lib/modules/Model')
 const Validatorus = require('./lib/modules/Validator')
@@ -8,6 +9,7 @@ module.exports = {
     prepareError: Error.prepare,
     prepareResponse: Error.responser,
     sendMail: Mail.send,
+    createFilenameHash: Services.createFilenameHash,
     Modelus,
     Validatorus
 }
