@@ -1,6 +1,6 @@
 {
   "name": "mcarz-back-utils",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Module Back-end End with common Util to Node projects",
   "main": "index.js",
   "scripts": {
