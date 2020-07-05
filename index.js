@@ -1,8 +1,13 @@
-let serrors = require('./lib/serrors')
-let smail = require('./lib/smail')
+const Error = require('./lib/handlers/Error')
+const Mail = require('./lib/handlers/Mail')
+
+const Modelus = require('./lib/modules/Model')
+const Validatorus = require('./lib/modules/Validator')
 
 modules.exports = {
-    prepareError: serrors.prepare,
-    prepareResponse: serrors.respse,
-    sendMail: smail.sendMail,
+    prepareError: Error.prepare,
+    prepareResponse: Error.responser,
+    sendMail: Mail.send,
+    Modelus,
+    Validatorus
 }
