@@ -185,7 +185,6 @@ export default class Model {
         if (this.transaction){
             db = db.transacting(this.transaction)
         }
-        console.log({ update: this.id})
         
         return new Promise((resolve, reject) => {
             db.update(data).where({ id: this.id })

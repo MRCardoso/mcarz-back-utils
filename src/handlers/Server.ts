@@ -3,7 +3,7 @@
  * Start a server with node+express
  * ----------------------------------------------------
  */
-export default(DB:any, port:number, ...entities:any) => {
+export default(DB:any, port:number = 3000, ...entities:any) => {
     const app = require('express')()
     const consign = require('consign')()
     

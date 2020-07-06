@@ -1,2 +1,5 @@
 src/
-_lib/
+gulpfile.js
+tsconfig.json
+README.md
+package-lock.json

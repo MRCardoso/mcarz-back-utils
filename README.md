@@ -10,39 +10,71 @@ npm i mcarz-back-utils
 ## Require modules
 
 ```javascript
-let myfaus = require('mcarz-back-utils');
+let { 
+    prepareError, 
+    prepareResponse, 
+    sendMail,
+    createFilenameHash, 
+    is400, 
+    is401, 
+    is403, 
+    is404,
+    server,
+} = require('mcarz-back-utils');
 ```
 
-## prepare error to response in the API
+## Factories
 
-Method to prepare the generated an object with StatusHttp and message with the error founded
+Method to create standard server node, with express, consign, knex
 
 ```javascript
-myfaus.prepareError(error:<object|string>, customKeys|<string> = null)
+server(db:object, port:number, ...entities)
 ```
-
-## response Api with StatusHttp and standard object returned
-
-Method to response the API with Status and message with base the raw error
-
-```javascript
-myfaus.prepareResponse(response: from express, error:<object|string>, prettyErr|<string> = null)
-```
-
-## send mail
 
 Method to send mail with nodemailer
 
 ```javascript
-myfaus.sendMail(data<object>, credentials<object>, configs<object>)
+sendMail(data: object, credentials: object, configs: object)
 ```
 
-## Class Validator
+## Common Services
+
+Method to create the hash with filename
+
+```javascript
+createFilenameHash(name:string)
+```
+
+## http 4xx return object
+
+```javascript
+is400(message: string)
+is401(message: string)
+is403(message: string)
+is404(message: string)
+```
+
+## Error Handler
+
+Method to prepare the generated an object with StatusHttp and message with the error founded
+
+```javascript
+prepareError(error:object|string, customKeys:string = null)
+```
+
+Method to response the API with Status and message with base the raw error
+
+```javascript
+prepareResponse(response: from express, error:object|string, prettyErr: string = null)
+```
+
+
+## Class
 
 Standard class to Make backend validations with common rules (e.g required)
 
 ```javascript
-const Validator = require('mcarz-back-utils').Validatorus
+const { Validatorus: Validator } = require('mcarz-back-utils')
 
 new Validator({
     "username": "the name of the user",
@@ -50,12 +82,10 @@ new Validator({
 })
 ```
 
-## Class Model
-
 Standard Model class work wih the validator and serve the standard method of CRUD
 
 ```javascript
-const Model = require('mcarz-back-utils').Modelus
+const { Modelus: Model } = require('mcarz-back-utils')
 class User extends Model {
     constructor(app){
         const fillables = ["id", "name", "username", "email"]
