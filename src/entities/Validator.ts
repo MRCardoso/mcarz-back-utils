@@ -1,28 +1,16 @@
-"use strict";
 /**
 | ----------------------------------------------------------------------------
 | Run the validation configurated to the model
 | call the method with the validation in the standard stored in the rules
-| standard:
+| standard: 
 | [
 |    'field': 'rules-devided-by-pipe:the dot two devided the argument set to rule'
 | ]
 | ----------------------------------------------------------------------------
 * @return bool
 */
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var messages = {
+
+let messages = {
     "required": "O campo ':field' é obrigatório",
     "min": "O campo ':field' de ter pelo menus :min caracteres.",
     "max": "O campo ':field' deve ter no máximo :max caracteres.",
@@ -37,21 +25,27 @@ var messages = {
     "unknownUser": "Usuário ':field' não encontrado.",
     "tokenExpired": "Este token expirou!",
     "missingAttributes": "Fornece atributos a este save",
-};
-var Validator = /** @class */ (function () {
+}
+
+export default class Validator{
+    rules: any
+    errors: any
+    post: any
     /**
      | ----------------------------------------------------------------------------
     | The list of validations to be executed before save a record of the model
     | ----------------------------------------------------------------------------
     */
-    function Validator(rules) {
-        this.rules = rules;
-        this.errors = {};
-        this.post = {};
+    constructor(rules:any){
+        this.rules = rules
+        this.errors = {}
+        this.post = {}
     }
-    Validator.addMessage = function (values) {
-        messages = __assign(__assign({}, messages), values);
-    };
+
+    static addMessage(values:object): void {
+        messages = { ...messages, ...values }
+    }
+
     /**
     | ----------------------------------------------------------------------------
     | Add a error in the model at the field that failed in the validation
@@ -60,38 +54,40 @@ var Validator = /** @class */ (function () {
     * @param string message
     * @return void
     */
-    Validator.prototype.setErrors = function (field, message) {
-        if (this.errors[field] === undefined) {
+    setErrors(field:string, message:string): void {
+        if (this.errors[field]===undefined){
             this.errors[field] = [];
         }
         this.errors[field].push(message);
-    };
+    }
+
     /**
     | ----------------------------------------------------------------------------
     | Check if exists error in the current validation
     | ----------------------------------------------------------------------------
     * @return bool is true when exist error
     */
-    Validator.prototype.hasErrors = function () {
-        var foundError = false;
-        for (var e in this.errors) {
-            if (this.errors[e] !== undefined && Array.isArray(this.errors[e]) && this.errors[e].length > 0) {
+    hasErrors(): boolean {
+        let foundError = false;
+        for (let e in this.errors){
+            if (this.errors[e] !== undefined && Array.isArray(this.errors[e]) && this.errors[e].length > 0){
                 foundError = true;
                 break;
             }
         }
         return foundError;
-    };
+    }
+
     /**
     | ----------------------------------------------------------------------------
     | Returns the list with the errors(grouped by [field] => [list-of-possibilities])
     | ----------------------------------------------------------------------------
     * @return Object|array is true when exist error
     */
-    Validator.prototype.getErrors = function (field) {
-        if (field === void 0) { field = null; }
+    getErrors(field: string = null): any {
         return (field ? this.errors[field] : this.errors);
-    };
+    }
+
     /**
     | ----------------------------------------------------------------------------
     | Run the validation configurated to the model
@@ -103,66 +99,68 @@ var Validator = /** @class */ (function () {
     | ----------------------------------------------------------------------------
     * @return bool
     */
-    Validator.prototype.validate = function (post) {
-        var _this = this;
-        this.post = post;
-        this.errors = {};
-        var _loop_1 = function (field) {
-            var validations = this_1.rules[field];
-            var vals = validations.split('|');
-            vals.forEach(function (validate) {
-                var events = validate.split(':');
-                if (events[0] in _this && typeof _this[events[0]] === "function") {
-                    var argList = { field: field };
+    validate(post:any): boolean {
+        this.post = post
+        this.errors = {}
+        
+        for (let field in this.rules){
+            let validations = this.rules[field]
+            let vals = validations.split('|')
+            vals.forEach(validate => {
+    
+                let events = validate.split(':')
+    
+                if (events[0] in this && typeof this[events[0]] === "function"){
+                    let argList:any = { field };
                     if (events[1] != undefined) {
                         argList[events[0]] = events[1];
                     }
-                    var output = _this[events[0]].apply(_this, (Object.values(argList)));
+                    
+                    let output = this[events[0]](...(Object.values(argList)));
+                    
                     if (!output) {
-                        argList.field = _this.getLabel(argList.field);
-                        if (argList.compare)
-                            argList.compare = _this.getLabel(argList.compare);
-                        _this.setErrors(field, _this.processMessages(events[0], argList));
+                        argList.field = this.getLabel(argList.field);
+                        if (argList.compare) argList.compare = this.getLabel(argList.compare)
+                        this.setErrors(field, this.processMessages(events[0], argList));
                     }
                 }
                 else {
-                    _this.setErrors(field, _this.processMessages("unknownMethod", { 'field': validate }));
+                    this.setErrors(field, this.processMessages("unknownMethod", { 'field': validate }));
                 }
-            });
-        };
-        var this_1 = this;
-        for (var field in this.rules) {
-            _loop_1(field);
+            })
         }
         if (this.hasErrors()) {
             return false;
         }
         return true;
-    };
-    Validator.prototype.getLabel = function (key) {
-        return messages[key] || key;
-    };
+    }
+
+    getLabel(key: string): string{
+        return messages[key] || key
+    }
     /**
     | ----------------------------------------------------------------------------
     | Gets the message from method/validator called
-    | e.g:key=required, returns the message at the key required, in messages property
+    | e.g:key=required, returns the message at the key required, in messages property 
     | ----------------------------------------------------------------------------
     * @param string key the method called
     * @param object params the list of params set to the method called
     * @return string the message
     */
-    Validator.prototype.processMessages = function (key, params) {
+    processMessages(key:string, params:object): string {
         if (messages[key] != undefined) {
-            var messager = messages[key];
-            for (var replacement in params) {
-                var value = params[replacement];
-                var regex = new RegExp(":" + replacement);
-                messager = messager.replace(regex, value);
+            let messager = messages[key];
+            for(let replacement in params){
+                let value = params[replacement]
+                let regex = new RegExp(`:${replacement}`)
+                messager = messager.replace(regex, value)
             }
+
             return messager;
         }
-        return "Translate " + key + " not found!";
-    };
+        return `Translate ${key} not found!`;
+    }
+
     /**
     | ----------------------------------------------------------------------------
     | Validator for verify if the attribute is not empty
@@ -171,17 +169,18 @@ var Validator = /** @class */ (function () {
     * @param string mode the additional rule before validate field
     * @return bool
     */
-    Validator.prototype.required = function (attribute, mode) {
-        if (mode === void 0) { mode = ''; }
-        if (mode == 'create') {
-            if (this.post['id']) {
-                return true;
+    required(attribute:string, mode:string = ''): boolean {
+        if (mode == 'create'){
+            if (this.post['id']){
+                return true
             }
         }
-        var notNull = (this.post[attribute] != null && this.post[attribute] != "null");
-        var notUndefined = (this.post[attribute] != undefined && this.post[attribute] != "undefined");
+        let notNull = (this.post[attribute] != null && this.post[attribute] != "null");
+        let notUndefined = (this.post[attribute] != undefined && this.post[attribute] != "undefined");
+
         return ((notNull && notUndefined && this.post[attribute].toString() != '') ? true : false);
-    };
+    }
+
     /**
     | ----------------------------------------------------------------------------
     | Validator for verify if the attribute is equal to a second
@@ -190,9 +189,10 @@ var Validator = /** @class */ (function () {
     * @param string comfirmation the attribute confirmation
     * @return bool
     */
-    Validator.prototype.compare = function (attribute, comfirmation) {
+    compare(attribute:string, comfirmation:string):boolean{
         return (this.post[attribute] == this.post[comfirmation]);
-    };
+    }
+
     /**
     | ----------------------------------------------------------------------------
     | Validator for verify if the attribute is a integer
@@ -200,11 +200,12 @@ var Validator = /** @class */ (function () {
     * @param string attribute the attribute validated
     * @return bool
     */
-    Validator.prototype.number = function (attribute) {
+    number(attribute):boolean {
         if (this.required(attribute))
             return /^[0-9]{1,}$/.test(this.post[attribute]) ? true : false;
         return true;
-    };
+    }
+
     /**
     | ----------------------------------------------------------------------------
     | Validator the verify if the email address is valid
@@ -212,13 +213,15 @@ var Validator = /** @class */ (function () {
     * @param string attribute the attribute validated
     * @return bool
     */
-    Validator.prototype.mail = function (attribute) {
-        var regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    mail(attribute: string): boolean {
+        let regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return regex.test(this.post[attribute]) ? true : false;
-    };
-    Validator.prototype.vusername = function (attribute) {
-        return /^[a-z]+[a-z0-9_]+[a-z0-9]$/i.test(this.post[attribute]) ? true : false;
-    };
+    }
+
+    vusername(attribute: string): boolean{
+        return /^[a-z]+[a-z0-9_]+[a-z0-9]$/i.test(this.post[attribute]) ? true : false
+    }
+
     /**
     | ----------------------------------------------------------------------------
     | Validator to verify if the attributes is a valid date
@@ -226,13 +229,14 @@ var Validator = /** @class */ (function () {
     * @param string attribute the attribute validated
     * @return bool
     */
-    Validator.prototype.date = function (attribute) {
-        if (this.required(attribute)) {
+    date(attribute: string): boolean{
+        if (this.required(attribute)){
             // return (/^\d{2}\/\d{2}\/\d{4}$/.test(this.post[attribute])) ? true : false
-            return (/^\d{4}-\d{2}-\d{2}$/.test(this.post[attribute])) ? true : false;
+            return (/^\d{4}-\d{2}-\d{2}$/.test(this.post[attribute])) ? true : false
         }
-        return true;
-    };
+        return true
+    }
+
     /**
     | ----------------------------------------------------------------------------
     | Validator the minimum size of the a string
@@ -241,14 +245,14 @@ var Validator = /** @class */ (function () {
     * @param string number the minimum size
     * @return bool
     */
-    Validator.prototype.min = function (attribute, number) {
-        if (number === void 0) { number = 10; }
-        if (this.required(attribute)) {
-            var value = (this.post[attribute] || "");
+    min(attribute: string, number: number = 10): boolean{
+        if (this.required(attribute)){
+            let value = (this.post[attribute] || "")
             return ((value.toString().length >= number) ? true : false);
         }
-        return true;
-    };
+        return true
+    }
+
     /**
     | ----------------------------------------------------------------------------
     | Validator the maximum size of the a string
@@ -257,14 +261,11 @@ var Validator = /** @class */ (function () {
     * @param string number the maximum size
     * @return bool
     */
-    Validator.prototype.max = function (attribute, number) {
-        if (number === void 0) { number = 200; }
-        if (this.required(attribute)) {
-            var value = (this.post[attribute] || "");
+    max(attribute: string, number: number = 200): boolean{
+        if (this.required(attribute)){
+            let value = (this.post[attribute] || "")
             return ((value.toString().length <= number) ? true : false);
         }
-        return true;
-    };
-    return Validator;
-}());
-exports.default = Validator;
+        return true
+    }
+}

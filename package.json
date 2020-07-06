@@ -9,8 +9,11 @@
   "dependencies": {
     "consign": "0.1.6",
     "express": "4.16.3",
+    "gulp": "^4.0.2",
+    "gulp-typescript": "^6.0.0-alpha.1",
     "knex": "^0.15.2",
-    "nodemailer": "5.1.1"
+    "nodemailer": "5.1.1",
+    "typescript": "^3.9.6"
   },
   "repository": {
     "type": "git",
@@ -21,5 +24,8 @@
   ],
   "author": "marlonrcardoso",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/mcarznpmx/mcarz-back-utils#readme"
+  "homepage": "https://bitbucket.org/mcarznpmx/mcarz-back-utils#readme",
+  "devDependencies": {
+    "@types/node": "^14.0.14"
+  }
 }
