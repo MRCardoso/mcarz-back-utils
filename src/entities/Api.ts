@@ -76,10 +76,6 @@ export default class Api {
      */
     public add(logged: any, post: any, rules: any, middleware: any): Promise<any> {
         return new Promise((resolve, reject) => {
-            if (!this.validateFields(post, rules)) {
-                return reject(is400(this._validator.getErrors()))
-            }
-
             let { token, expires, payload } = middleware()
 
             if(this._tokenField.trim() !== ""){
@@ -93,6 +89,10 @@ export default class Api {
             }
             
             post[this._userField] = logged.id
+            
+            if (!this.validateFields(post, rules)) {
+                return reject(is400(this._validator.getErrors()))
+            }
             
             this._model
                 .save(post)
