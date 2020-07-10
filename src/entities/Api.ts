@@ -68,36 +68,39 @@ export default class Api {
 
     /**
      * Create a newly record in the api table from the instance in property '_model'
-     * @param {object} logged the values of the logged user to create link for api table
      * @param {object} post the field data to insert in the _model instance
      * @param {object} rules the custom rules
+     * @param {*} next the promisse with load user
      * @param {*} middleware the custom function to create payload with JWT
      * @returns {Promise}
      */
-    public add(logged: any, post: any, rules: any, middleware: any): Promise<any> {
+    public add(post: any, rules: any, next: any, middleware: any): Promise<any> {
         return new Promise((resolve, reject) => {
-            let { token, expires, payload } = middleware()
-
-            if(this._tokenField.trim() !== ""){
-                post[this._tokenField] = token
-            }
-            if(this._expiresField.trim() !== ""){
-                post[this._expiresField] = expires
-            }
-            if(this._createFiled.trim() !== ""){
-                post[this._createFiled] = new Date()
-            }
-            
-            post[this._userField] = logged.id
-            
-            if (!this.validateFields(post, rules)) {
-                return reject(is400(this._validator.getErrors()))
-            }
-            
-            this._model
-                .save(post)
-                .then(id => resolve({ authToken: { ...payload, token, apiId: id }, ...logged }))
-                .catch(err => reject(err))
+            next().then((logged:any) => {
+                let { token, expires, payload } = middleware(logged)
+    
+                if(this._tokenField.trim() !== ""){
+                    post[this._tokenField] = token
+                }
+                if(this._expiresField.trim() !== ""){
+                    post[this._expiresField] = expires
+                }
+                if(this._createFiled.trim() !== ""){
+                    post[this._createFiled] = new Date()
+                }
+                
+                post[this._userField] = logged.id
+                
+                if (!this.validateFields(post, rules)) {
+                    return reject(is400(this._validator.getErrors()))
+                }
+    
+                this._model
+                    .save(post)
+                    .then((id: number) => resolve({ authToken: { ...payload, token, apiId: id }, ...logged }))
+                    .catch((err: any) => reject(err))
+            })
+            .catch((err: any) => reject(err))
         })
     }
 
@@ -135,16 +138,17 @@ export default class Api {
 
     /**
      * Load by token a record in the api table from the instance in property '_model'
+     * @param {*} next the promisse with load user
      * @param {string} token the token create with JWT in login
      * @returns {Promise}
      */
-    public getByToken(token: string): Promise<any> {
+    public getByToken(next: any, token: string): Promise<any> {
         const params = { [this._tokenField]: token }
 
         if (!this.validateToken(params)) {
             return Promise.reject(is400(this._validator.getErrors()))
         }
         
-        return this._model.findByToken(params)
+        return next(params)
     }
 }
