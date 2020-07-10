@@ -9,6 +9,7 @@
   "dependencies": {
     "consign": "0.1.6",
     "express": "4.16.3",
+    "jwt-simple": "^0.5.6",
     "knex": "^0.15.2",
     "nodemailer": "5.1.1"
   },
@@ -26,7 +27,6 @@
     "@types/node": "^14.0.14",
     "gulp": "^4.0.2",
     "gulp-typescript": "^6.0.0-alpha.1",
-    "jwt-simple": "^0.5.6",
     "typescript": "^3.9.6"
   }
 }
