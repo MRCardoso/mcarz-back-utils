@@ -1,3 +1,4 @@
+import { encode as encodeJWT, decode as decodeJWT} from 'jwt-simple'
 /**
  * ----------------------------------------------------------
  * Default object to response to API node with error Http 4xx
@@ -106,4 +107,52 @@ export const sendMail = (data: any, credentials: any, configs: any) => {
             transporte.send(email, (err, info) => (err ? reject(err) : resolve(info)));
         });
     })
+}
+
+/**
+ * ----------------------------------------------------
+ * Clean payload in the JWT token
+ * ----------------------------------------------------
+ * @param {object} params
+ * @param {string} params.authSecret the secret string to encrypt the payload
+ */
+export const cleanToken = ({ authSecret }: any) => encodeJWT(null, authSecret)
+
+/**
+ * ----------------------------------------------------
+ * Generate standard payload to create JWT token
+ * ----------------------------------------------------
+ * @param {object} params
+ * @param {string} params.authSecret the secret string to encrypt the payload
+ * @param {number} params.authToken the expires timestamp milliseconds to token
+ * @param {object} customs the additional data to attach in payload
+ * @returns {object} 
+ */
+export const createToken = ({ authSecret = 'secret-key', authToken = (60*60) }: any = {}, customs: object = {}): object => {
+    const now = Math.floor(Date.now() / 1000)
+    const expires = (now + authToken)  
+    const payload = { ...customs, iat: now, exp: expires }
+    const token = encodeJWT(payload, authSecret)
+
+    return { token, expires, payload }
+}
+
+/**
+ * ----------------------------------------------------
+ * Verify the expiration of the token JWT
+ * ----------------------------------------------------
+ * @param {string} token the generated token in signin
+ * @param {string} authSecret the secret string to encrypt the payload
+ * @throws {Error} exception to notify the api that token expires
+ */
+export const expiredToken = (token: string, authSecret: string) => {
+    const payload: any = decodeJWT(token, authSecret)
+    const now = new Date()
+    const expires = new Date(payload.exp * 1000)
+
+    console.log(`Current Date: ${now} - Expires Date: ${expires}`)
+
+    if (expires < now) {
+        throw new Error("Token expired")
+    }
 }

@@ -4,7 +4,8 @@ import { is400, is404 } from "../handlers/Services"
 const timestamps = ["created_at", "updated_at"]
 
 /**
- * @property {object} app the app created in the express
+ * @author Marlon R. Cardoso
+ * @property {object} app the express instance
  * @property {string} table the table name in the database of the instance of model
  * @property {object} fillables the fields allowed to work in the sql methods (select, inset and update)
  * @property {object} hiddens the fields hidden in the sql methods (select, inset and update)
@@ -12,6 +13,13 @@ const timestamps = ["created_at", "updated_at"]
  * @property {Validator} validator the instance of the class Validator to make the validations
  * @property {object} attributes the magic attributes of the model created in constructor
  * @property {bool} timestamps the definition if the model has create and update dates
+ * @property {bool} transaction enabled or disable  the transaction in the queries executed
+ * @property {string} primaryKey the field name of the primary key in the current model
+ * @property {number} id the automatic field filled with primary key of the current model
+ * -----------------------------------------------------------------------------------------------------
+ * Standard Class to manage the queries with database
+ * using knex npm package to establish connection with database
+ * -----------------------------------------------------------------------------------------------------
  */
 export default class Model {
     app: any
