@@ -6,11 +6,12 @@ import {
     expiredToken,
     createToken,
     cleanToken
-} from './handlers/Services'
+} from './handlers/Utils'
 import { prepare, responser } from './handlers/Error'
 import Model from './entities/Model'
 import Validator from './entities/Validator'
 import Api from './entities/Api'
+import UserEntity from './entities/UserEntity'
 
 export {
     prepare as prepareError,
@@ -26,6 +27,7 @@ export {
     is404,
     server,
     Api,
+    UserEntity,
     Model,
     Validator
 }

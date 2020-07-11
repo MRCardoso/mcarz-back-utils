@@ -1,5 +1,5 @@
 import Validator from './Validator'
-import { is400 } from '../handlers/Services'
+import { is400 } from '../handlers/Utils'
 
 /**
  * ----------------------------------------------------------------------------

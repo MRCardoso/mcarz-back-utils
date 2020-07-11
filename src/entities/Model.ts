@@ -1,5 +1,5 @@
 import Validator from "./Validator"
-import { is400, is404 } from "../handlers/Services"
+import { is400, is404 } from "../handlers/Utils"
 
 const timestamps = ["created_at", "updated_at"]
 
@@ -340,7 +340,7 @@ export default class Model {
     * @param {bool|array} hiddenOrCustom when bool add the hidden fillable, when array use their as fields in query
     * @return Promise
     */
-    one(params: any, relations: any[] = [], hiddenOrCustom: boolean = false): Promise<any> {
+    one(params: any, relations: any[] = [], hiddenOrCustom: any = false): Promise<any> {
         let query = this.app.db(this.table)
         let fields = (Array.isArray(hiddenOrCustom) ? hiddenOrCustom : this.getFields(hiddenOrCustom))
 

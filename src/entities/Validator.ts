@@ -24,6 +24,8 @@ let messages = {
     "unknownMethod": "Validação desconhecida chamada em :field.",
     "unknownUser": "Usuário ':field' não encontrado.",
     "tokenExpired": "Este token expirou!",
+    "invalidPassword": "Senha inválida",
+    "inativatedUser": "Usuário inativo",
     "missingAttributes": "Fornece atributos a este save",
 }
 
@@ -147,7 +149,7 @@ export default class Validator{
     * @param object params the list of params set to the method called
     * @return string the message
     */
-    processMessages(key:string, params:object): string {
+    processMessages(key:string, params:object = {}): string {
         if (messages[key] != undefined) {
             let messager = messages[key];
             for(let replacement in params){
