@@ -123,7 +123,7 @@ export default class UserEntity extends Model {
 
             this.one({ username: post.username }, [...relations], true).then(logged => {
                 if (!logged.status){
-                    return reject(is401(this.validator.processMessages("inativatedUser")))
+                    return reject(is400({ username: [this.validator.processMessages("inativatedUser")] }))
                 }
                 if (!compareSync(post.password, logged.password)) {
                     return reject(is400({ password: [this.validator.processMessages("invalidPassword")] }))
