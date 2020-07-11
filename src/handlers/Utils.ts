@@ -1,4 +1,5 @@
 import { encode as encodeJWT, decode as decodeJWT} from 'jwt-simple'
+import Validator from '../entities/Validator'
 /**
  * ----------------------------------------------------------
  * Default object to response to API node with error Http 4xx
@@ -42,70 +43,46 @@ export const server = (DB: any, port: number = 3000, ...entities: any) => {
  * ----------------------------------------------------
  * Send mail with nodemailer
  * ----------------------------------------------------
+ * @param {object} data email data
+ * @param {string} data.mail the email to be send
+ * @param {string} data.subject the subject of the mail
+ * @param {object} data.content the html content of the mail
+ * @param {array} data.annex the file to attach as attachments in the mail
+ * @param configs 
  */
-export const sendMail = (data: any, credentials: any, configs: any) => {
-    function replaceCharacters(html, content, title) {
-        while (content.indexOf("{") != -1 || content.indexOf("}") != -1) {
-            content = content.replace(/\{/ig, '<').replace(/\}/ig, '>');
-        }
-        const { AWS, logoHeader, logoFooter, endpoint } = configs
-
-        return html
-            .replace(/\{title\}/ig, title)
-            .replace(/\{appURL\}/ig, endpoint)
-            .replace(/\{logo1\}/ig, (logoHeader ? `<img src="${AWS.URL}${AWS.Bucket}/${logoHeader}" width="40">` : ''))
-            .replace(/\{logo2\}/ig, (logoFooter ? `<img src="${AWS.URL}${AWS.Bucket}/${logoFooter}" width="80">` : ''))
-            .replace(/\{content\}/ig, content);
-    }
+export const sendMail = (data: any, mailFrom: string = 'noreplay', apiKey: any) => {
     return new Promise((resolve, reject) => {
-        if (!data) {
-            return reject("Não há conteúdo para envio do email")
+        const validator = new Validator({
+            mail: 'required', 
+            subject: 'required', 
+            content: 'required'
+        })
+
+        if (!validator.validate(data)){
+            return reject(is400(validator.getErrors()))
+        }
+        
+        if (!apiKey) {
+            return reject("Por favor configure a API do servidor de email!")
         }
 
-        if (!credentials.serviceMail || !credentials.loginMail || !credentials.passMail) {
-            return reject("Por favor configure o servidor de email, login e senha!")
+        const nodemailer = require('nodemailer')
+        const sgTransport = require('nodemailer-sendgrid-transport');
+        const transporter = sgTransport({ auth: { api_key: apiKey } })
+        const transporte = nodemailer.createTransport(transporter)
+        
+        let email:any = {
+            from: ` <${mailFrom}>`,
+            to: data.mail,
+            subject: data.subject,
+            headers: { 'content-type': 'text/html' },
+            html: data.content
         }
 
-        let path = credentials.rPath || 'mail';
-        let view = credentials.view || 'index';
-        let ext = credentials.ext || 'html';
-        let filenamePath = `./${path}/${view}.${ext}`;
-
-        console.log(`send-file: ${filenamePath}`);
-        require('fs').readFile(filenamePath, 'utf8', (err, template) => {
-            if (err) {
-                return reject(err);
-            }
-
-            console.log('sending-mail');
-
-            let nodemailer = require('nodemailer')
-            let sgTransport = require('nodemailer-sendgrid-transport');
-            let transporte = nodemailer.createTransport(
-                sgTransport({
-                    auth: {
-                        api_key: credentials.apiKey
-                        // api_user: 'SENDGRID_USERNAME',
-                        // api_key: 'SENDGRID_PASSWORD'
-                    }
-                })
-            )
-            let email = {
-                from: [" <", credentials.loginMail, ">"].join(''),
-                to: data.mail,
-                subject: data.subject,
-                headers: { 'content-type': 'text/html' },
-                html: replaceCharacters(template, data.content, data.title),
-                attachments: []
-            }
-
-            if ('annex' in data && 'name' in data.annex && 'path' in data.annex) {
-                email.attachments = [{ filename: data.annex.name, path: data.annex.path }];
-            } else {
-                delete email.attachments
-            }
-            transporte.send(email, (err, info) => (err ? reject(err) : resolve(info)));
-        });
+        if ('annex' in data && 'name' in data.annex && 'path' in data.annex) {
+            email.attachments = [{ filename: data.annex.name, path: data.annex.path }];
+        }
+        transporte.sendMail(email).then(resolve, reject)
     })
 }
 
