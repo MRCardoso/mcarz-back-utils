@@ -6,7 +6,7 @@ import { randomBytes } from 'crypto'
 
 /**
  * @author Marlon R. Cardoso
- * @property {int} id the primary key of the table
+ * @property {number} id the primary key of the table
  * @property {string} name the name of the user
  * @property {string} username the username of the user
  * @property {string} email the email of the user
@@ -24,8 +24,7 @@ import { randomBytes } from 'crypto'
  */
 export default class UserEntity extends Model {
     [x: string]: any
-    envConfig: any
-    constructor(app: any, envConfig: any) {
+    constructor(app: any) {
         const fillables = ["id", "name", "username", "email", "status", "admin"]
         const hiddens = ["password"]
         const rules = {
@@ -37,7 +36,6 @@ export default class UserEntity extends Model {
             "status": "number"
         }
         super(app, "users", rules, fillables, hiddens)
-        this.envConfig = envConfig
     }
 
     get tokenField(): string{
@@ -193,14 +191,14 @@ export default class UserEntity extends Model {
      * ----------------------------------------------------------------------------
      * Update the reset password token and expires date of the load user
      * ----------------------------------------------------------------------------
-     * @param {int} id the id of the user to send token
+     * @param {number} id the id of the user to send token
+     * @param {number} exp the expires date timestamp in milliseconds
      * @returns {Promise}
      */
-    updateResetToken(id: any): Promise<any> {
-        const { resetToken = (60 * 60 * 1000) } = this.envConfig
+    updateResetToken(id: any, exp: number = (60 * 60 * 1000)): Promise<any> {
         const password = UserEntity.hashPassword(Date.now() * 1000);
         const token = randomBytes(32).toString('hex');
-        const expires = Date.now() + resetToken
+        const expires = Date.now() + exp
 
         return new Promise((resolve, reject) => {
             this.id = id
@@ -217,7 +215,7 @@ export default class UserEntity extends Model {
      * @param {object} post the data with password and confirmation
      * @param {string} post.password the password to be update
      * @param {string} post.confirmation the confirmation of the password
-     * @param {int} id the id of the user to send token
+     * @param {number} id the id of the user to send token
      * @returns {Promise}
      */
     updatePassword(post: any, id: number): Promise<any> {
