@@ -3,7 +3,7 @@
 
 #### install package
 ```
-npm i mcarz-back-utils
+npm i nodeevel
 ```
 
 
@@ -20,7 +20,7 @@ let {
     is403, 
     is404,
     server,
-} = require('mcarz-back-utils');
+} = require('nodeevel');
 ```
 
 ## Factories
@@ -74,7 +74,7 @@ prepareResponse(response: from express, error:object|string, prettyErr: string =
 Standard class to Make backend validations with common rules (e.g required)
 
 ```javascript
-const { Validatorus: Validator } = require('mcarz-back-utils')
+const { Validatorus: Validator } = require('nodeevel')
 
 new Validator({
     "username": "the name of the user",
@@ -85,7 +85,7 @@ new Validator({
 Standard Model class work wih the validator and serve the standard method of CRUD
 
 ```javascript
-const { Modelus: Model } = require('mcarz-back-utils')
+const { Modelus: Model } = require('nodeevel')
 class User extends Model {
     constructor(app){
         const fillables = ["id", "name", "username", "email"]

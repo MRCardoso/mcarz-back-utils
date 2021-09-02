@@ -1,6 +1,6 @@
 {
-  "name": "mcarz-back-utils",
-  "version": "3.3.0",
+  "name": "nodeevel",
+  "version": "3.3.1",
   "description": "Module Back-end End with common Util to Node projects",
   "main": "index.js",
   "scripts": {
@@ -17,14 +17,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org/mcarznpmx/mcarz-back-utils.git"
+    "url": "git+ssh://git@github.com/MRCardoso/nodeevel.git"
   },
   "keywords": [
-    "mine-backend-utils"
+    "mine-backend-utils",
+    "nodevel",
+    "node helper",
+    "node lib",
+    "node micro framework",
+    "provider node utils",
+    "node utils"
   ],
   "author": "marlonrcardoso",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/mcarznpmx/mcarz-back-utils#readme",
+  "homepage": "https://github.com/MRCardoso/nodeevel#readme",
   "devDependencies": {
     "@types/node": "^14.0.14",
     "gulp": "^4.0.2",
